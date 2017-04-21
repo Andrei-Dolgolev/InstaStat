@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<h1>D3_Data</h1>
+<p>первый пример</p>
+<div class="chartHTML"></div>
+<script src="http://d3js.org/d3.v3.js"></script>
+<script>
+d3.select("h1").style("color","green");
+
+var data_1 = [2,3,45,5,6,7,8,8]
+d3.select("body").append("svg")
+  .selectAll("rect").data(data_1)
+  .enter()
+  .append("rect")
+
+d3.json(
+"{% url "PyData" %}", function( data) {
+  console.log(data)
+
+  var svg = d3.select("svg")
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + d3.max(d.X) + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+
+}
+);
+
+
+function tabulate(data, columns) {
+
+    //remove existing table (if), create new one
+    d3.select("#datatable").selectAll("table").remove();
+    var table = d3.select("#datatable").append("table"),
+        thead = table.append("thead"),
+        tbody = table.append("tbody");
+
+  //append the header row
+  thead.append("tr")
+    .selectAll("th")
+    .data(columns)
+    .enter()
+    .append("th")
+    .text(function(column) {
+      return column;
+    });
+
+  // create a row for each object in the data
+  var rows = tbody.selectAll("tr")
+    .data(data)
+    .enter()
+    .append("tr");
+
+  // create a cell in each row for each column
+  var cells = rows.selectAll("td")
+    .data(function(row) {
+      return columns.map(function(column) {
+        return {
+          column: column,
+          value: row
+        };
+      });
+    })
+    .enter()
+    .append("td")
+    .text(function(d, i) {
+      return d.value[i];
+    });
+
+  firstgo=false;
+  return table;
+}
+
+</script>
+</body>
+</html>

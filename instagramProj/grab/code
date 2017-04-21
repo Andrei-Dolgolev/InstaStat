@@ -1,0 +1,80 @@
+  x.domain(d3.extent(data, function(d) { return d.month; }));
+  y.domain(d3.extent(data, function(d) { return d.count_items; }));
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Play count");
+
+  svg.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line);
+
+
+
+
+
+      console.log(url);
+
+    // render the table
+    tabulate(d.data, Object.keys( d ));
+
+    // render the chart with nvd3
+    nv.addGraph(function() {
+      var chart = nv.models.lineChart()
+        .margin({
+          left: 100
+        })
+        .useInteractiveGuideline(false)
+        .transitionDuration(350)
+        .showLegend(true)
+        .showYAxis(true)
+        .showXAxis(true);
+
+      chart.xAxis
+        .axisLabel("Year")
+        .tickFormat(d3.format(',r'));
+
+      chart.yAxis
+        .axisLabel(d.name + " x 1M")
+        .tickFormat(d3.format('.02f'));
+
+
+      var chartData = [{
+        values: [], //values - represents the array of {x,y} data points
+        key: d.code, //key  - the name of the series.
+        color: '#ff7f0e' //color - optional: choose your own line color.
+      }];
+
+      var roots = d.data.map(function(e) {
+        return {
+          x: e[0].slice(0, 4),
+          y: e[1] / 1000000
+        };
+      });
+
+      //push it to chartData;
+      //change index or wrap in loop if more datasets graphed on the same chart, e.g. emissions from fossil, gas, etc.
+      chartData[0].values = roots;
+
+      d3.select('#chart svg') //select the <svg> element you want to render the chart in.
+        .datum(chartData) //populate the <svg> element with chart data...
+        .call(chart); //render the chart
+
+      //Update the chart when window resizes.
+      nv.utils.windowResize(function() {
+        chart.update();
+      });
+      return chart;
+    });
